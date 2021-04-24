@@ -1,0 +1,103 @@
+{
+    "name": "delicious-cakes-api",
+    "version": "0.1.0",
+    "description": "serverless cake api",
+    "main": "handler.js",
+    "dependencies": {
+        "aws-sdk": "^2.809.0",
+        "eslint-config-airbnb-base": "14.2.1",
+        "serialize-error": "^5.0.0",
+        "serverless-domain-manager": "2.3.5",
+        "serverless-dynamodb-billing-mode-local": "^0.2.36",
+        "serverless-dynamodb-local": "^0.2.28"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.1.2",
+        "@babel/plugin-proposal-class-properties": "^7.1.0",
+        "@babel/plugin-proposal-export-namespace-from": "^7.0.0",
+        "@babel/plugin-proposal-object-rest-spread": "^7.0.0",
+        "@babel/plugin-transform-arrow-functions": "^7.0.0",
+        "@babel/plugin-transform-for-of": "^7.0.0",
+        "@babel/preset-env": "^7.0.0",
+        "babel-core": "^7.0.0-bridge",
+        "babel-eslint": "^10.0.1",
+        "babel-jest": "^23.6.0",
+        "babel-loader": "^8.0.4",
+        "babel-plugin-module-resolver": "^3.1.1",
+        "eslint": "^5.6.1",
+        "eslint-import-resolver-babel-module": "5.0.0-beta.0",
+        "eslint-loader": "^2.0.0",
+        "eslint-plugin-import": "^2.14.0",
+        "eslint-plugin-jest": "^21.24.0",
+        "jest": "^22.1.4",
+        "prettier": "1.14.3",
+        "serverless": "1.61.1",
+        "serverless-offline": "^5.7.3",
+        "serverless-webpack": "^4.2.0",
+        "webpack": "^3.10.0"
+    },
+    "scripts": {
+        "start": "serverless offline start --stage local",
+        "test": "jest --watch",
+        "build": "sls webpack",
+        "deploy-dvl": "serverless deploy --stage dvl"
+    },
+    "author": "Hestie Seyfarth",
+    "license": "ISC",
+    "babel": {
+        "presets": [
+            [
+                "@babel/preset-env",
+                {
+                    "useBuiltIns": "entry",
+                    "corejs": {
+                        "version": 2,
+                        "proposals": true
+                    },
+                    "targets": {
+                        "node": "8.10"
+                    }
+                }
+            ]
+        ],
+        "plugins": [
+            [
+                "module-resolver",
+                {
+                    "root": [
+                        "."
+                    ]
+                }
+            ],
+            "@babel/plugin-transform-arrow-functions",
+            "@babel/plugin-proposal-export-namespace-from",
+            "@babel/plugin-proposal-object-rest-spread",
+            "@babel/plugin-transform-for-of",
+            [
+                "@babel/plugin-proposal-class-properties",
+                {
+                    "loose": false
+                }
+            ]
+        ]
+    },
+    "jest": {
+        "testURL": "http://localhost",
+        "testMatch": [
+            "<rootDir>/(tests/unit/**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx))"
+        ],
+        "testPathIgnorePatterns": [
+            "/node_modules/",
+            "webapp"
+        ],
+        "coveragePathIgnorePatterns": [
+            "/node_modules/",
+            "<rootDir>/coverage/lcov-report",
+            "<rootDir>/webpack.config.js"
+        ],
+        "setupTestFrameworkScriptFile": "<rootDir>/testSetup.js",
+        "collectCoverageFrom": [
+            "**/*.js"
+        ]
+    }
+}

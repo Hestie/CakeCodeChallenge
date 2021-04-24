@@ -1,0 +1,47 @@
+{
+    "parser": "babel-eslint",
+    "extends": ["airbnb-base"],
+    "env": {
+        "browser": false
+    },
+    "rules": {
+        "comma-dangle": ["error", "never"],
+        "eol-last": "off",
+        "func-names": "off",
+        "import/no-unresolved": "off",
+        "import/imports-first": ["warn", "DISABLE-absolute-first"],
+        "indent": "off",
+        "jsx-a11y/click-events-have-key-events": "off",
+        "jsx-a11y/no-noninteractive-element-interactions": "off",
+        "linebreak-style": "off",
+        "max-len": [
+            "error",
+            {
+                "code": 175
+            }
+        ],
+        "no-console": ["off"],
+        "no-multiple-empty-lines": ["warn"],
+        "no-plusplus": ["off"],
+        "no-prototype-builtins": "off",
+        "no-trailing-spaces": "warn",
+        "no-underscore-dangle": "off",
+        "no-restricted-syntax": "off",
+        "no-unused-vars": ["warn"],
+        "no-use-before-define": "off",
+        "object-curly-newline": "off",
+        "semi": "warn",
+        "import/prefer-default-export": "off"
+    },
+    "settings": {
+        "import/resolver": {
+            "babel-module": {}
+        }
+    },
+    "globals": {
+        "describe": true,
+        "it": true,
+        "expect": true,
+        "jest": true
+    }
+}

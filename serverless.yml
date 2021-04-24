@@ -1,0 +1,118 @@
+service: delicious-cakes-api
+
+provider:
+    name: aws
+    runtime: nodejs12.x
+    region: eu-west-1
+    versionFunctions: false
+    stackTags:
+        Name: delicious-cakes-api
+        api-environment: "${opt:stage, self:provider.stage}"
+    role: ${file(env.yml):${self:custom.stage}.lambda_role}
+    environment: ${file(env.yml):${self:custom.stage}}
+    vpc:
+        securityGroupIds:
+            - ${file(env.yml):${self:custom.stage}.security_group_id}
+        subnetIds:
+            - ${file(env.yml):${self:custom.stage}.subnetid1}
+            - ${file(env.yml):${self:custom.stage}.subnetid2}
+            - ${file(env.yml):${self:custom.stage}.subnetid3}
+
+custom:
+    serverless-offline:
+        port: 3004
+        host: 0.0.0.0
+    stage: "${opt:stage, self:provider.stage}"
+    dynamodb:
+        start:
+            port: 8000
+            inMemory: false
+            migrate: true
+            seed: false
+            noStart: ${file(env.yml):${self:custom.stage}.noStart}
+    customDomain:
+        domainName: ${file(env.yml):${self:custom.stage}.domainname}
+        basePath: "tlpconverterservice"
+        stage: ${self:custom.stage}
+        hostedZoneId: ${file(env.yml):${self:custom.stage}.hostedzoneid}
+        createRoute53Record: false
+
+plugins:
+    - serverless-webpack
+    - serverless-dynamodb-billing-mode-local
+    - serverless-offline
+    - serverless-domain-manager
+
+functions:
+    create:
+        handler: lambda-functions/create.createCake
+        timeout: 90
+        events:
+            - http:
+                  path: cake/
+                  method: post
+                  cors: ${file(serverless-cors.yml):corssettings}
+                  request:
+                      parameters:
+                          body: "$input.body"
+                  authorizer:
+                      arn: ${file(env.yml):${self:custom.stage}.authorizer}
+    get:
+        handler: lambda-functions/read.getCake
+        timeout: 90
+        events:
+            - http:
+                  path: cake/{id}
+                  method: get
+                  cors: ${file(serverless-cors.yml):corssettings}
+                  request:
+                      paths:
+                      id: true
+                  authorizer:
+                      arn: ${file(env.yml):${self:custom.stage}.authorizer}
+    list:
+        handler: lambda-functions/read.getAllCakes
+        timeout: 90
+        events:
+            - http:
+                  path: cakes/
+                  method: get
+                  cors: ${file(serverless-cors.yml):corssettings}
+                  authorizer:
+                      arn: ${file(env.yml):${self:custom.stage}.authorizer}
+    delete:
+        handler: lambda-functions/delete.deleteCake
+        timeout: 90
+        events:
+            - http:
+                  path: cake/{id}
+                  method: delete
+                  cors: ${file(serverless-cors.yml):corssettings}
+                  request:
+                      paths:
+                      id: true
+                  authorizer:
+                      arn: ${file(env.yml):${self:custom.stage}.authorizer}
+
+resources:
+    Resources:
+        ReferenceTable:
+            Type: "AWS::DynamoDB::Table"
+            DeletionPolicy: Retain
+            Properties:
+                KeySchema:
+                    - AttributeName: partitionKey
+                      KeyType: HASH
+                    - AttributeName: id
+                      KeyType: RANGE
+                AttributeDefinitions:
+                    - AttributeName: partitionKey
+                      AttributeType: S
+                    - AttributeName: id
+                      AttributeType: N
+                BillingMode: PAY_PER_REQUEST
+                SSESpecification:
+                    SSEEnabled: true
+                PointInTimeRecoverySpecification:
+                    PointInTimeRecoveryEnabled: ${file(env.yml):${self:custom.stage}.enablePITRestore}
+                TableName: ${file(env.yml):${self:custom.stage}.dynamodb_tablename}
